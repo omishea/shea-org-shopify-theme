@@ -1,1 +1,24 @@
-<section class="cart-page wrap"><h1>Varukorg</h1>{% if cart.item_count == 0 %}<p>Din varukorg är tom.</p><a class="button" href="{{ routes.all_products_collection_url }}">Fortsätt handla</a>{% else %}<form action="{{ routes.cart_url }}" method="post"><div class="cart-items">{% for item in cart.items %}<div class="cart-item">{% if item.image %}{{ item.image | image_url: width: 180 | image_tag: alt: item.product.title }}{% endif %}<div><a href="{{ item.url }}"><strong>{{ item.product.title }}</strong></a><p>{{ item.variant.title }}</p><p>{{ item.final_line_price | money }}</p><input type="number" name="updates[]" value="{{ item.quantity }}" min="0"></div></div>{% endfor %}</div><div class="cart-summary"><strong>Totalt: {{ cart.total_price | money }}</strong><button class="button" type="submit" name="update">Uppdatera</button><button class="button" type="submit" name="checkout">Till kassan</button></div></form>{% endif %}</section>{% schema %}{"name":"Varukorg","settings":[]}{% endschema %}
+<section class="cart-route-redirect" aria-live="polite">
+  <p>Öppnar din varukorg…</p>
+</section>
+<script>
+(function () {
+  function openDrawerFromCartRoute() {
+    var opener = document.querySelector('[data-cart-open]');
+    if (!opener) return;
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', '{{ routes.root_url }}');
+    }
+    opener.click();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', openDrawerFromCartRoute, { once: true });
+  } else {
+    openDrawerFromCartRoute();
+  }
+})();
+</script>
+<style>
+.cart-route-redirect{min-height:calc(100vh - 164px);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}
+</style>
+{% schema %}{"name":"Varukorg","settings":[]}{% endschema %}
