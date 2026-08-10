@@ -1,25 +1,38 @@
-{% assign is_shea = false %}{% if product.handle == 'pure-shea-butter-beige-organic-unrefined' %}{% assign is_shea = true %}{% endif %}
-<section class="product-page wrap">
-  <div class="gallery">
-    <div class="gallery-main">{% if product.featured_image %}{{ product.featured_image | image_url: width: 1200 | image_tag: loading: 'eager', alt: product.title }}{% endif %}</div>
-    {% if product.images.size > 1 %}<div class="gallery-thumbs">{% for image in product.images %}<button class="gallery-thumb{% if forloop.first %} active{% endif %}" type="button" data-image="{{ image | image_url: width: 1200 }}">{{ image | image_url: width: 180 | image_tag: loading: 'lazy', alt: product.title }}</button>{% endfor %}</div>{% endif %}
+{% assign is_shea = false %}{% assign is_clay = false %}{% if product.handle == 'pure-shea-butter-beige-organic-unrefined' %}{% assign is_shea = true %}{% endif %}{% if product.handle == 'australian-pastel-pink-clay' %}{% assign is_clay = true %}{% endif %}
+<main class="product-main wrap">
+  <a class="back-link" href="{{ routes.root_url }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Tillbaka till butiken</span></a>
+  <section class="product-page">
+    <div class="gallery">
+      <div class="gallery-main">{% if product.featured_image %}{{ product.featured_image | image_url: width: 1200 | image_tag: loading: 'eager', alt: product.title }}{% endif %}</div>
+      {% if product.images.size > 1 %}<div class="gallery-thumbs">{% for image in product.images %}<button class="gallery-thumb{% if forloop.first %} active{% endif %}" type="button" data-image="{{ image | image_url: width: 1200 }}" aria-label="Visa bild {{ forloop.index }}">{{ image | image_url: width: 180 | image_tag: loading: 'lazy', alt: product.title }}</button>{% endfor %}</div>{% endif %}
+    </div>
+    <div class="product-details">
+      <h1>{% if is_shea %}Ekologiskt Sheasmör{% elsif is_clay %}Australian Pastel Pink Clay{% else %}{{ product.title }}{% endif %}</h1>
+      <p class="price" id="ProductPrice">{{ product.selected_or_first_available_variant.price | money }}</p>
+      {% if is_shea %}<p class="product-tagline">Oraffinerat, vildskördat sheasmör av Grade A. En enda ingrediens, inget annat.</p>{% elsif is_clay %}<p class="product-tagline">Australisk pastellrosa lera. Mild ansiktsmask för stressad och mogen hud.</p>{% else %}<p class="product-tagline">{{ product.description | strip_html | truncate: 150 }}</p>{% endif %}
+      {% form 'product', product, id: 'ProductForm' %}
+        {% if product.variants.size > 1 %}<div class="variant-picker"><p class="variant-label">Alternativ</p><div class="variant-pills">{% for variant in product.variants %}<button type="button" class="variant-pill{% if variant == product.selected_or_first_available_variant %} active{% endif %}" data-variant-id="{{ variant.id }}" data-price="{{ variant.price | money | escape }}" {% unless variant.available %}disabled{% endunless %}>{{ variant.title }}</button>{% endfor %}</div><select class="variant-select-hidden" name="id" aria-hidden="true" tabindex="-1">{% for variant in product.variants %}<option value="{{ variant.id }}" {% if variant == product.selected_or_first_available_variant %}selected{% endif %}>{{ variant.title }}</option>{% endfor %}</select></div>{% else %}<input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">{% endif %}
+        <button class="add-button" type="submit" {% unless product.available %}disabled{% endunless %}>{% if product.available %}Lägg i varukorgen{% else %}Slutsåld{% endif %}</button>
+      {% endform %}
+    </div>
+  </section>
+
+  <div class="product-sections">
+    <nav class="product-tabs" aria-label="Produktsektioner">
+      <button type="button" class="product-tab active" data-target="beskrivning"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 16-9 5-9-5V8l9-5 9 5v8Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg><span>Produktbeskrivning</span></button>
+      <button type="button" class="product-tab" data-target="anvandning"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3-1.5 4.5L6 9l4.5 1.5L12 15l1.5-4.5L18 9l-4.5-1.5L12 3Z"/><path d="m19 14-.8 2.2L16 17l2.2.8L19 20l.8-2.2L22 17l-2.2-.8L19 14ZM5 3l-.7 2.3L2 6l2.3.7L5 9l.7-2.3L8 6l-2.3-.7L5 3Z"/></svg><span>Användning</span></button>
+      <button type="button" class="product-tab" data-target="ingredienser"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5.2 18 2 18 2s2 5.4-.5 10.5C16.1 15.4 13.7 17 11 20Z"/><path d="M2 21c0-3 1.8-5.5 5.4-7.5"/></svg><span>Ingredienser</span></button>
+      <button type="button" class="product-tab" data-target="leverans"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h13v10H3zM16 9h3l2 3v4h-5z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg><span>Leverans</span></button>
+    </nav>
+    <div class="product-copy">
+      <section id="beskrivning" class="product-copy-section">
+        {% if is_shea %}<p>Vårt ekologiska sheasmör kommer från Ghana, där sheanötterna skördas enligt traditionella metoder och förädlas varsamt för att bevara sin naturliga kvalitet. Sheasmöret är 100 % rent, kallpressat och oraffinerat, vilket hjälper till att bevara dess naturliga vitaminer och näringsrika fettsyror. Rikt på vitaminerna A och E vårdar, återfuktar och skyddar det både hud och hår på djupet – helt utan tillsatser, parfym eller kemikalier.</p><h2>Fördelar</h2><ul><li>Intensivt återfuktande för torr och känslig hud.</li><li>Hjälper till att lugna irritation och stödjer hudens naturliga barriär.</li><li>Bidrar till ökad elasticitet och en mjuk, smidig hud.</li><li>Vårdar torrt och skadat hår samt ger mjukhet, glans och följsamhet.</li><li>100 % naturligt och fritt från tillsatser, parfym och kemikalier.</li><li>Passar alla hud- och hårtyper.</li></ul>{% else %}{{ product.description }}{% endif %}
+      </section>
+      <section id="anvandning" class="product-copy-section"><h2>Användning</h2>{% if is_shea %}<ul><li>Värm en liten mängd mellan handflatorna tills den smälter.</li><li>Massera in i fuktig hud efter dusch eller bad.</li><li>Använd på armbågar, knän, händer, fötter och läppar.</li><li>Fungerar även som hårinpackning för torra toppar.</li></ul>{% endif %}</section>
+      <section id="ingredienser" class="product-copy-section"><h2>Ingredienser</h2>{% if is_shea %}<p><strong>100 % Butyrospermum Parkii Butter</strong> (oraffinerat sheasmör). Ingen doft, inga konserveringsmedel, inga färgämnen och inga mineraloljor.</p>{% endif %}</section>
+      <section id="leverans" class="product-copy-section"><h2>Leverans</h2><p>Vi skickar din beställning inom 1–2 arbetsdagar.</p></section>
+    </div>
   </div>
-  <div class="product-details">
-    <h1>{% if is_shea %}Ekologiskt Sheasmör{% else %}{{ product.title }}{% endif %}</h1>
-    <div class="price" id="ProductPrice">{{ product.selected_or_first_available_variant.price | money }}</div>
-    {% if is_shea %}<p class="product-tagline">Oraffinerat, vildskördat sheasmör av Grade A. En enda ingrediens, inget annat.</p>{% else %}<p class="product-tagline">{{ product.description | strip_html | truncate: 150 }}</p>{% endif %}
-    {% form 'product', product, id: 'ProductForm' %}
-      {% if product.variants.size > 1 %}<div class="variant-picker"><p class="variant-label">Alternativ</p><div class="variant-pills">{% for variant in product.variants %}<button type="button" class="variant-pill{% if variant == product.selected_or_first_available_variant %} active{% endif %}" data-variant-id="{{ variant.id }}" data-price="{{ variant.price | money | escape }}" {% unless variant.available %}disabled{% endunless %}>{{ variant.title }}</button>{% endfor %}</div><select class="variant-select-hidden" name="id" aria-hidden="true" tabindex="-1">{% for variant in product.variants %}<option value="{{ variant.id }}" {% if variant == product.selected_or_first_available_variant %}selected{% endif %}>{{ variant.title }}</option>{% endfor %}</select></div>{% else %}<input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">{% endif %}
-      <button class="button add-button" type="submit" {% unless product.available %}disabled{% endunless %}>{% if product.available %}Lägg i varukorgen{% else %}Slutsåld{% endif %}</button>
-    {% endform %}
-  </div>
-</section>
-<nav class="product-tabs wrap" aria-label="Produktsektioner"><a class="product-tab active" href="#beskrivning">▱ <span>Produktbeskrivning</span></a><a class="product-tab" href="#anvandning">✧ <span>Användning</span></a><a class="product-tab" href="#ingredienser">♧ <span>Ingredienser</span></a><a class="product-tab" href="#leverans">▣ <span>Leverans</span></a></nav>
-<div class="product-copy wrap">
-  <section id="beskrivning">{% if is_shea %}<p>Vårt ekologiska sheasmör kommer från Ghana, där sheanötterna skördas enligt traditionella metoder och förädlas varsamt för att bevara sin naturliga kvalitet. Sheasmöret är 100 % rent, kallpressat och oraffinerat.</p><h2>Fördelar</h2><ul><li>Intensivt återfuktande för torr och känslig hud.</li><li>Hjälper till att lugna irritation och stödjer hudens naturliga barriär.</li><li>Bidrar till ökad elasticitet och en mjuk, smidig hud.</li><li>Vårdar torrt och skadat hår.</li></ul>{% else %}{{ product.description }}{% endif %}</section>
-  <section id="anvandning"><h2>Användning</h2>{% if is_shea %}<ul><li>Värm en liten mängd mellan handflatorna tills den smälter.</li><li>Massera in i fuktig hud efter dusch eller bad.</li><li>Använd på armbågar, knän, händer, fötter och läppar.</li><li>Fungerar även som hårinpackning för torra toppar.</li></ul>{% endif %}</section>
-  <section id="ingredienser"><h2>Ingredienser</h2>{% if is_shea %}<p><strong>100 % Butyrospermum Parkii Butter</strong> (oraffinerat sheasmör). Ingen doft, inga konserveringsmedel, inga färgämnen och inga mineraloljor.</p>{% endif %}</section>
-  <section id="leverans"><h2>Leverans</h2><p>Vi skickar din beställning inom 1–2 arbetsdagar.</p></section>
-</div>
-<script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.gallery-thumb').forEach(function(b){b.addEventListener('click',function(){var m=document.querySelector('.gallery-main img');if(m)m.src=this.dataset.image;document.querySelectorAll('.gallery-thumb').forEach(x=>x.classList.remove('active'));this.classList.add('active')})});document.querySelectorAll('.variant-pill').forEach(function(b){b.addEventListener('click',function(){if(this.disabled)return;var s=document.querySelector('.variant-select-hidden');if(s)s.value=this.dataset.variantId;var p=document.getElementById('ProductPrice');if(p)p.textContent=this.dataset.price;document.querySelectorAll('.variant-pill').forEach(x=>x.classList.remove('active'));this.classList.add('active')})})});</script>
+</main>
+<script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.gallery-thumb').forEach(function(b){b.addEventListener('click',function(){var m=document.querySelector('.gallery-main img');if(m)m.src=this.dataset.image;document.querySelectorAll('.gallery-thumb').forEach(function(x){x.classList.remove('active')});this.classList.add('active')})});document.querySelectorAll('.variant-pill').forEach(function(b){b.addEventListener('click',function(){if(this.disabled)return;var s=document.querySelector('.variant-select-hidden');if(s)s.value=this.dataset.variantId;var p=document.getElementById('ProductPrice');if(p)p.textContent=this.dataset.price;document.querySelectorAll('.variant-pill').forEach(function(x){x.classList.remove('active')});this.classList.add('active')})});document.querySelectorAll('.product-tab').forEach(function(b){b.addEventListener('click',function(){var el=document.getElementById(this.dataset.target);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('.product-tab').forEach(function(x){x.classList.remove('active')});this.classList.add('active')})})});</script>
 {% schema %}{"name":"Produkt","settings":[]}{% endschema %}
